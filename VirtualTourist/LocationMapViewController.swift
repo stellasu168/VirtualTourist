@@ -210,7 +210,7 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
         
         switch (sender.selectedSegmentIndex) {
         case 0:
-            mapView.mapType = .Standard
+            mapView.mapType = .Hybrid
         case 1:
             mapView.mapType = .Satellite
         default:
