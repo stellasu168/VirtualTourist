@@ -205,14 +205,17 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
+    // Reference: http://stackoverflow.com/questions/33200161/change-map-type-hybrid-satellite-via-segmented-control
     // Change map type (satellite) via segmented control
     @IBAction func segmentedControlAction(sender: UISegmentedControl) {
         
         switch (sender.selectedSegmentIndex) {
         case 0:
-            mapView.mapType = .Hybrid
+            mapView.mapType = .Standard
         case 1:
             mapView.mapType = .Satellite
+        case 2:
+            mapView.mapType = .Hybrid
         default:
             mapView.mapType = .Standard
         }

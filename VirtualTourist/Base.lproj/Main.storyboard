@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1605" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="goA-Ix-Nnn">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1713" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="goA-Ix-Nnn">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
@@ -181,13 +181,14 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ESB-r6-9LY">
-                                <rect key="frame" x="86" y="495" width="156" height="28"/>
+                                <rect key="frame" x="54" y="495" width="212" height="28"/>
                                 <subviews>
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="fIa-Nq-0RA">
-                                        <rect key="frame" x="0.0" y="0.0" width="156" height="29"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="212" height="29"/>
                                         <segments>
                                             <segment title="Standard"/>
                                             <segment title="Satellite"/>
+                                            <segment title="Hybrid"/>
                                         </segments>
                                         <connections>
                                             <action selector="segmentedControlAction:" destination="BYZ-38-t0r" eventType="valueChanged" id="KK8-gv-qvK"/>
@@ -200,14 +201,13 @@
                         <constraints>
                             <constraint firstItem="BvQ-F9-lGE" firstAttribute="top" secondItem="bk4-s1-Skg" secondAttribute="bottom" id="2LH-xA-0o6"/>
                             <constraint firstItem="BvQ-F9-lGE" firstAttribute="trailing" secondItem="bk4-s1-Skg" secondAttribute="trailing" id="5VC-KC-Or5"/>
-                            <constraint firstItem="ESB-r6-9LY" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="70" id="8MK-VM-OfN"/>
                             <constraint firstItem="bk4-s1-Skg" firstAttribute="leading" secondItem="BvQ-F9-lGE" secondAttribute="leading" id="9An-AR-Jck"/>
+                            <constraint firstItem="BvQ-F9-lGE" firstAttribute="top" secondItem="ESB-r6-9LY" secondAttribute="bottom" constant="8" symbolic="YES" id="AK9-xF-ERh"/>
                             <constraint firstItem="bk4-s1-Skg" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-18" id="BJB-oX-Kut"/>
+                            <constraint firstItem="ESB-r6-9LY" firstAttribute="centerX" secondItem="BvQ-F9-lGE" secondAttribute="centerX" id="KMR-a1-Wmh"/>
                             <constraint firstItem="BvQ-F9-lGE" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="Kcl-2d-hWX"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="ESB-r6-9LY" secondAttribute="trailing" constant="62" id="Yi5-V0-j1L"/>
                             <constraint firstItem="bk4-s1-Skg" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="bWS-Fj-Fuf"/>
                             <constraint firstItem="bk4-s1-Skg" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="boE-a4-GFG"/>
-                            <constraint firstItem="BvQ-F9-lGE" firstAttribute="top" secondItem="ESB-r6-9LY" secondAttribute="bottom" constant="8" id="scO-TJ-8nv"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Virtual Tourist" id="kyB-5d-8IE">
