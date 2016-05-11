@@ -28,6 +28,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, NSFetchedRe
     // Array of IndexPath - keeping track of index of selected cells
     var selectedIndexofCollectionViewCells = [NSIndexPath]()
     
+    
     // MARK: - Core Data Convenience
     
     var sharedContext: NSManagedObjectContext {
@@ -201,6 +202,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, NSFetchedRe
         
         let sectionInfo = self.fetchedResultsController.sections![section]
         print("Number of photos returned from fetchedResultsController #\(sectionInfo.numberOfObjects)")
+        
         // If numberOfObjects is not zero, hide the noImagesLabel
         noImagesLabel.hidden = sectionInfo.numberOfObjects != 0
         

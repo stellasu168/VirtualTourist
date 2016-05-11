@@ -91,6 +91,7 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
     
     }
 
+    
     // Pressing and holding a point on the map creates a new Pin object and adds it to the map
     // Reference: http://stackoverflow.com/questions/5182082/mkmapview-drop-a-pin-on-touch
     func handleLongPress(getstureRecognizer : UIGestureRecognizer){

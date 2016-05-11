@@ -134,6 +134,7 @@ class FlickrClient: NSObject {
     // Get error for response
     class func errorForResponse(data: NSData?, response: NSURLResponse?, error: NSError) -> NSError {
         
+        // If network fails, app will crash here.
         if let parsedResult = (try? NSJSONSerialization.JSONObjectWithData(data!, options: .AllowFragments)) as? [String : AnyObject] {
             
             if let status = parsedResult[JSONResponseKeys.Status]  as? String,
