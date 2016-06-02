@@ -125,6 +125,11 @@
 		55AA117E1C5984FF00977620 /* VirtualTourist */ = {
 			isa = PBXGroup;
 			children = (
+				55AA118B1C59850000977620 /* LaunchScreen.storyboard */,
+				55AA11831C5984FF00977620 /* Main.storyboard */,
+				55AA11861C5984FF00977620 /* VirtualTourist.xcdatamodeld */,
+				55AA118E1C59850000977620 /* Info.plist */,
+				55AA11891C59850000977620 /* Assets.xcassets */,
 				550172561C7464770086DC28 /* Controller */,
 				550172551C7459270086DC28 /* Model */,
 				55AA117F1C5984FF00977620 /* AppDelegate.swift */,
@@ -133,8 +138,6 @@
 				5501720B1C6C66900086DC28 /* FlickrConstants.swift */,
 				5501720F1C6C74100086DC28 /* FlickrConvenient.swift */,
 				550172531C71BC310086DC28 /* CoreDataStackManager.swift */,
-				55AA118B1C59850000977620 /* LaunchScreen.storyboard */,
-				55AA11831C5984FF00977620 /* Main.storyboard */,
 				550172631C790A080086DC28 /* Photos+CoreDataProperties.swift */,
 				550172641C790A080086DC28 /* Photos.swift */,
 				5501726B1C7A89450086DC28 /* Pin+CoreDataProperties.swift */,
@@ -142,9 +145,6 @@
 				5501726F1C7C5F6A0086DC28 /* PhotoCollectionViewCell.swift */,
 				55F309761C8BBE2E0017521C /* Category+CoreDataProperties.swift */,
 				55F309771C8BBE2E0017521C /* Category.swift */,
-				55AA11861C5984FF00977620 /* VirtualTourist.xcdatamodeld */,
-				55AA118E1C59850000977620 /* Info.plist */,
-				55AA11891C59850000977620 /* Assets.xcassets */,
 			);
 			path = VirtualTourist;
 			sourceTree = "<group>";

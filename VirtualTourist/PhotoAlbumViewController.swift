@@ -17,7 +17,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, NSFetchedRe
     // Flag for deleting pictures
     var isDeleting = false
     
-    var editingFlag: Bool = false
+    var editingFlag = false
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var bottomButton: UIButton!

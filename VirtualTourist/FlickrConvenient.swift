@@ -6,7 +6,7 @@
 //  Copyright © 2016 Million Stars, LLC. All rights reserved.
 //
 
-import UIKit
+import Foundation
 import CoreData
 
 extension FlickrClient {

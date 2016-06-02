@@ -1,6 +1,6 @@
 //
 //  LocationMapViewController.swift
-//  VirtualTourist
+//  VirtualTourist - 4th Udacity app 
 //
 //  Created by Stella Su on 1/27/16.
 //  Copyright © 2016 Million Stars, LLC. All rights reserved.
@@ -18,11 +18,12 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
     @IBOutlet weak var deleteLabel: UILabel!
     @IBOutlet weak var editButton: UINavigationItem!
     
+    
     var pins = [Pin]()
     var selectedPin: Pin? = nil
     
     // Flag for editing mode
-    var editingPins: Bool = false
+    var editingPins = false
     
     // Core Data
     var sharedContext: NSManagedObjectContext {
