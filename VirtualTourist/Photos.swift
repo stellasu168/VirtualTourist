@@ -25,25 +25,25 @@ class Photos: NSManagedObject {
             
             // Get the file path
             let fileName = (filePath as NSString).lastPathComponent
-            let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+            let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
             let pathArray = [dirPath, fileName]
-            let fileURL = NSURL.fileURLWithPathComponents(pathArray)!
+            let fileURL = NSURL.fileURL(withPathComponents: pathArray)
             
-            return UIImage(contentsOfFile: fileURL.path!)
+            return UIImage(contentsOfFile: fileURL!.path)
         }
         return nil
         
     }
 
     // MARK: - Init model
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertInto: context)
     }
 
     init(photoURL: String, pin: Pin, context: NSManagedObjectContext){
         
-        let entity = NSEntityDescription.entityForName("Photos", inManagedObjectContext: context)!
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+        let entity = NSEntityDescription.entity(forEntityName: "Photos", in: context)!
+        super.init(entity: entity, insertInto: context)
         self.url = photoURL
         self.pin = pin
         print("init from Photos.swift\(url)")
@@ -60,12 +60,12 @@ class Photos: NSManagedObject {
         // Delete the associated image file when the Photos managed object is deleted.
         let fileName = (filePath! as NSString).lastPathComponent
         
-        let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+        let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
         let pathArray = [dirPath, fileName]
-        let fileURL = NSURL.fileURLWithPathComponents(pathArray)!
+        let fileURL = NSURL.fileURL(withPathComponents: pathArray)!
         
         do {
-                    try NSFileManager.defaultManager().removeItemAtURL(fileURL)
+                    try FileManager.default.removeItem(at: fileURL)
                 } catch let error as NSError {
                     print("Error from prepareForDeletion - \(error)")
                 }

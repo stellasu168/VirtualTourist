@@ -16,83 +16,86 @@ class FlickrClient: NSObject {
     var numberOfPhotoDownloaded = 0
 
     // Shared session
-    var session: NSURLSession
+    var session: URLSession
     
     override init() {
-        session = NSURLSession.sharedSession()
+        session = URLSession.shared
         super.init()
     }
     
     // MARK: - GET request
     
-    func taskForGETMethodWithParameters(parameters: [String : AnyObject],
-        completionHandler: (result: AnyObject!, error: NSError?) -> Void) {
+    func taskForGETMethodWithParameters(_ parameters: [String : AnyObject],
+        completionHandler: @escaping (_ result: AnyObject?, _ error: NSError?) -> Void) {
             
             // Build the URL and configure the request
             let urlString = Constants.BaseURL + FlickrClient.escapedParameters(parameters)
-            let request = NSMutableURLRequest(URL: NSURL(string: urlString)!)
-            
-            // Make the request
-            let task = session.dataTaskWithRequest(request) {
+            let request = URLRequest(url: URL(string: urlString)!)
+        
+        // Make the request
+            let task = session.dataTask(with: request, completionHandler: {
                 data, response, downloadError in
                 
                 // Parse the received data
                 if let error = downloadError {
-                    let newError = FlickrClient.errorForResponse(data, response: response, error: error)
-                    completionHandler(result: nil, error: newError)
+                    let newError = FlickrClient.errorForResponse(data, response: response, error: error as NSError)
+                    completionHandler(nil, newError)
                 } else {
                     FlickrClient.parseJSONWithCompletionHandler(data!, completionHandler: completionHandler)
                 }
-            }
-            
+            }) 
+ 
             // Start the request
             task.resume()
+ 
     }
     
     // MARK: POST
-    func taskForGETMethod(urlString: String,
-        completionHandler: (result: NSData?, error: NSError?) -> Void) {
+    func taskForGETMethod(_ urlString: String,
+        completionHandler: @escaping (_ result: Data?, _ error: NSError?) -> Void) {
             
             // Create the request
-            let request = NSMutableURLRequest(URL: NSURL(string: urlString)!)
-            
+            //let request = NSMutableURLRequest(url: URL(string: urlString)!) as URLRequest
+        let request = URLRequest(url: URL(string: urlString)!)
+        
             // Make the request
-            let task = session.dataTaskWithRequest(request) {
+        let task = session.dataTask(with: request, completionHandler: {
                 data, response, downloadError in
                 
                 if let error = downloadError {
                     
-                    let newError = FlickrClient.errorForResponse(data, response: response, error: error)
-                    completionHandler(result: nil, error: newError)
+                    let newError = FlickrClient.errorForResponse(data, response: response, error: error as NSError)
+                    completionHandler(nil, newError)
                 } else {
                     
-                    completionHandler(result: data, error: nil)
+                    completionHandler(data, nil)
                 }
-            }
+            }) 
             
             // Start the request
             task.resume()
+ 
     }
     
     // MARK: - Helpers
     
     // Substitute the key for the value that is contained within the method name
-    class func subtituteKeyInMethod(method: String, key: String, value: String) -> String? {
-        if method.rangeOfString("{\(key)}") != nil {
-            return method.stringByReplacingOccurrencesOfString("{\(key)}", withString: value)
+    class func subtituteKeyInMethod(_ method: String, key: String, value: String) -> String? {
+        if method.range(of: "{\(key)}") != nil {
+            return method.replacingOccurrences(of: "{\(key)}", with: value)
         } else {
             return nil
         }
     }
     
     // Given raw JSON, return a usable Foundation object
-    class func parseJSONWithCompletionHandler(data: NSData, completionHandler: (result: AnyObject!, error: NSError?) -> Void) {
+    class func parseJSONWithCompletionHandler(_ data: Data, completionHandler: (_ result: AnyObject?, _ error: NSError?) -> Void) {
         
         var parsingError: NSError?
-        let parsedResult: AnyObject?
+        let parsedResult: Any?
         
         do {
-            parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
+            parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
         } catch let error as NSError {
             parsingError = error
             parsedResult = nil
@@ -101,16 +104,16 @@ class FlickrClient: NSObject {
         }
         
         if let error = parsingError {
-            completionHandler(result: nil, error: error)
+            completionHandler(nil, error)
         } else {
-            completionHandler(result: parsedResult, error: nil)
+            completionHandler(parsedResult as AnyObject?, nil)
         }
         
     }
     
     
     // Given a dictionary of parameters, convert to a string for a url
-    class func escapedParameters(parameters: [String : AnyObject]) -> String {
+    class func escapedParameters(_ parameters: [String : AnyObject]) -> String {
         
         var urlVars = [String]()
         
@@ -120,7 +123,7 @@ class FlickrClient: NSObject {
                 let stringValue = "\(value)"
                 
                 // Escape it
-                let escapedValue = stringValue.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())
+                let escapedValue = stringValue.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
                 
                 // Append it
                 urlVars += [key + "=" + "\(escapedValue!)"]
@@ -128,17 +131,17 @@ class FlickrClient: NSObject {
             
         }
         
-        return (!urlVars.isEmpty ? "?" : "") + urlVars.joinWithSeparator("&")
+        return (!urlVars.isEmpty ? "?" : "") + urlVars.joined(separator: "&")
     }
     
     // Get error for response
-    class func errorForResponse(data: NSData?, response: NSURLResponse?, error: NSError) -> NSError {
+    class func errorForResponse(_ data: Data?, response: URLResponse?, error: NSError) -> NSError {
         
         // If network fails, app will crash here.
-        if let parsedResult = (try? NSJSONSerialization.JSONObjectWithData(data!, options: .AllowFragments)) as? [String : AnyObject] {
+        if let parsedResult = (try? JSONSerialization.jsonObject(with: data!, options: .allowFragments)) as? [String : AnyObject] {
             
             if let status = parsedResult[JSONResponseKeys.Status]  as? String,
-                message = parsedResult[JSONResponseKeys.Message] as? String {
+                let message = parsedResult[JSONResponseKeys.Message] as? String {
                     
                     if status == JSONResponseValues.Fail {
                         
@@ -153,20 +156,20 @@ class FlickrClient: NSObject {
     
     // MARK: - Show error alert
     
-    func showAlert(message: NSError, viewController: AnyObject) {
+    func showAlert(_ message: NSError, viewController: AnyObject) {
         let errMessage = message.localizedDescription
         
-        let alert = UIAlertController(title: nil, message: errMessage, preferredStyle: UIAlertControllerStyle.Alert)
-        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: { action in
-            alert.dismissViewControllerAnimated(true, completion: nil)
+        let alert = UIAlertController(title: nil, message: errMessage, preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: { action in
+            alert.dismiss(animated: true, completion: nil)
         }))
         
-        viewController.presentViewController(alert, animated: true, completion: nil)
+        viewController.present(alert, animated: true, completion: nil)
     }
     
-    func openURL(urlString: String) {
-        let url = NSURL(string: urlString)
-        UIApplication.sharedApplication().openURL(url!)
+    func openURL(_ urlString: String) {
+        let url = URL(string: urlString)
+        UIApplication.shared.openURL(url!)
     }
     
     // MARK: - Shared Instance

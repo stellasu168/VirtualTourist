@@ -1,6 +1,6 @@
 //
 //  LocationMapViewController.swift
-//  VirtualTourist - 4th Udacity app 
+//  VirtualTourist - 4th Udacity app
 //
 //  Created by Stella Su on 1/27/16.
 //  Copyright © 2016 Million Stars, LLC. All rights reserved.
@@ -33,11 +33,11 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
     func fetchAllPins() -> [Pin] {
         
         // Create the fetch request
-        let fetchRequest = NSFetchRequest(entityName: "Pin")
+        let fetchRequest = NSFetchRequest<Pin>(entityName: "Pin")
         
         // Execute the fetch request
         do {
-            return try sharedContext.executeFetchRequest(fetchRequest) as! [Pin]
+            return try sharedContext.fetch(fetchRequest) 
         } catch {
             print("error in fetch")
             return [Pin]()
@@ -47,14 +47,14 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let longPressRecogniser = UILongPressGestureRecognizer(target: self, action: "handleLongPress:")
+        let longPressRecogniser = UILongPressGestureRecognizer(target: self, action: #selector(LocationMapViewController.handleLongPress(_:)))
         
         longPressRecogniser.minimumPressDuration = 1.0
         mapView.addGestureRecognizer(longPressRecogniser)
         
         // Set the map view delegate
         mapView.delegate = self
-        deleteLabel.hidden = true
+        deleteLabel.isHidden = true
         
         addSavedPinsToMap()
     }
@@ -75,11 +75,11 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
     }
     
     // When the edit button is clicked, show the 'Done' button and flag the editingPins to true
-    @IBAction func editClicked(sender: UIBarButtonItem) {
+    @IBAction func editClicked(_ sender: UIBarButtonItem) {
         
         if editingPins == false {
             editingPins = true
-            deleteLabel.hidden = false
+            deleteLabel.isHidden = false
             navigationItem.rightBarButtonItem?.title = "Done"
         
         }
@@ -87,7 +87,7 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
         else if editingPins {
             navigationItem.rightBarButtonItem?.title = "Edit"
             editingPins = false
-            deleteLabel.hidden = true
+            deleteLabel.isHidden = true
         }
     
     }
@@ -95,17 +95,17 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
     
     // Pressing and holding a point on the map creates a new Pin object and adds it to the map
     // Reference: http://stackoverflow.com/questions/5182082/mkmapview-drop-a-pin-on-touch
-    func handleLongPress(getstureRecognizer : UIGestureRecognizer){
+    func handleLongPress(_ getstureRecognizer : UIGestureRecognizer){
         
         // If it's in editing mode, do nothing
         if (editingPins) {
             return
         } else {
             
-        if getstureRecognizer.state != .Began { return }
+        if getstureRecognizer.state != .began { return }
         
-        let touchPoint = getstureRecognizer.locationInView(self.mapView)
-        let touchMapCoordinate = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
+        let touchPoint = getstureRecognizer.location(in: self.mapView)
+        let touchMapCoordinate = mapView.convert(touchPoint, toCoordinateFrom: mapView)
         
         let annotation = MKPointAnnotation()
         annotation.coordinate = touchMapCoordinate
@@ -151,7 +151,7 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
     // Mark: - When a pin is tapped, it will transition to the Phone Album View Controller
     
     // Start by updating the view for the annotation. This is necessary because it allows you to intercept taps on the annotation's view (the pin).
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "pin")
         annotationView.canShowCallout = false
         
@@ -159,7 +159,7 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
     }
 
     
-    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         
         mapView.deselectAnnotation(view.annotation, animated: true)
         guard let annotation = view.annotation else { /* no annotation */ return }
@@ -177,7 +177,7 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
                 
                 if editingPins {
                     print("Deleting pin - verify core data is deleting as well")
-                    sharedContext.deleteObject(selectedPin!)
+                    sharedContext.delete(selectedPin!)
                     
                     // Deleting selected pin on map
                     self.mapView.removeAnnotation(annotation)
@@ -194,32 +194,32 @@ class LocationMapViewController: UIViewController, MKMapViewDelegate {
                         pin.pinTitle = "This pin has no name"
                     }
                     // Move to the Phone Album View Controller
-                    self.performSegueWithIdentifier("PhotoAlbum", sender: nil)
+                    self.performSegue(withIdentifier: "PhotoAlbum", sender: nil)
                     }
             }
         }
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "PhotoAlbum") {
-            let viewController = segue.destinationViewController as! PhotoAlbumViewController
+            let viewController = segue.destination as! PhotoAlbumViewController
             viewController.pin = selectedPin
         }
     }
     
     // Reference: http://stackoverflow.com/questions/33200161/change-map-type-hybrid-satellite-via-segmented-control
     // Change map type (satellite) via segmented control
-    @IBAction func segmentedControlAction(sender: UISegmentedControl) {
+    @IBAction func segmentedControlAction(_ sender: UISegmentedControl) {
         
         switch (sender.selectedSegmentIndex) {
         case 0:
-            mapView.mapType = .Standard
+            mapView.mapType = .standard
         case 1:
-            mapView.mapType = .Satellite
+            mapView.mapType = .satellite
         case 2:
-            mapView.mapType = .Hybrid
+            mapView.mapType = .hybrid
         default:
-            mapView.mapType = .Standard
+            mapView.mapType = .standard
         }
         
     }

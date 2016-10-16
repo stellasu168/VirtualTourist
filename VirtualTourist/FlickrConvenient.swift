@@ -12,11 +12,11 @@ import CoreData
 extension FlickrClient {
     
     // Initiates a download from Flickr
-    func downloadPhotosForPin(pin: Pin, completionHandler: (success: Bool, error: NSError?) -> Void) {
+    func downloadPhotosForPin(_ pin: Pin, completionHandler: @escaping (_ success: Bool, _ error: NSError?) -> Void) {
        
         var randomPageNumber: Int = 1
         
-        if let numberPages = pin.pageNumber?.integerValue {
+        if let numberPages = pin.pageNumber?.intValue {
             if numberPages > 0 {
                 let pageLimit = min(numberPages, 20)
                 randomPageNumber = Int(arc4random_uniform(UInt32(pageLimit))) + 1 }
@@ -24,15 +24,15 @@ extension FlickrClient {
         
         // Parameters for request photos
         let parameters: [String : AnyObject] = [
-            URLKeys.Method : Methods.Search,
-            URLKeys.APIKey : Constants.APIKey,
-            URLKeys.Format : URLValues.JSONFormat,
-            URLKeys.NoJSONCallback : 1,
-            URLKeys.Latitude : pin.latitude,
-            URLKeys.Longitude : pin.longitude,
-            URLKeys.Extras : URLValues.URLMediumPhoto,
-            URLKeys.Page : randomPageNumber,
-            URLKeys.PerPage : 21
+            URLKeys.Method : Methods.Search as AnyObject,
+            URLKeys.APIKey : Constants.APIKey as AnyObject,
+            URLKeys.Format : URLValues.JSONFormat as AnyObject,
+            URLKeys.NoJSONCallback : 1 as AnyObject,
+            URLKeys.Latitude : pin.latitude as AnyObject,
+            URLKeys.Longitude : pin.longitude as AnyObject,
+            URLKeys.Extras : URLValues.URLMediumPhoto as AnyObject,
+            URLKeys.Page : randomPageNumber as AnyObject,
+            URLKeys.PerPage : 21 as AnyObject
         ]
         
         // Make GET request for get photos for pin
@@ -40,15 +40,15 @@ extension FlickrClient {
             results, error in
             
             if let error = error {
-                completionHandler(success: false, error: error)
+                completionHandler(false, error)
             } else {
                 
                 // Response dictionary
-                if let photosDictionary = results.valueForKey(JSONResponseKeys.Photos) as? [String: AnyObject],
-                    photosArray = photosDictionary[JSONResponseKeys.Photo] as? [[String : AnyObject]],
-                    numberOfPhotoPages = photosDictionary[JSONResponseKeys.Pages] as? Int {
+                if let photosDictionary = results?.value(forKey: JSONResponseKeys.Photos) as? [String: AnyObject],
+                    let photosArray = photosDictionary[JSONResponseKeys.Photo] as? [[String : AnyObject]],
+                    let numberOfPhotoPages = photosDictionary[JSONResponseKeys.Pages] as? Int {
                         
-                        pin.pageNumber = numberOfPhotoPages
+                        pin.pageNumber = numberOfPhotoPages as NSNumber?
                         
                         self.numberOfPhotoDownloaded = photosArray.count
 
@@ -68,29 +68,29 @@ extension FlickrClient {
                                 
                                 //print("Downloading photo by URL - \(success): \(error)")
                                 
-                                self.numberOfPhotoDownloaded--
+                                self.numberOfPhotoDownloaded-=1
                                 
                                 // Posting NSNotifications
-                                NSNotificationCenter.defaultCenter().postNotificationName("downloadPhotoImage.done", object: nil)
+                                NotificationCenter.default.post(name: Notification.Name(rawValue: "downloadPhotoImage.done"), object: nil)
                                 
                                 // Save the context
-                                dispatch_async(dispatch_get_main_queue(), {
+                                DispatchQueue.main.async(execute: {
                                     CoreDataStackManager.sharedInstance().saveContext()
                                 })
                             })
                         }
                         
-                        completionHandler(success: true, error: nil)
+                        completionHandler(true, nil)
                 } else {
                     
-                    completionHandler(success: false, error: NSError(domain: "downloadPhotosForPin", code: 0, userInfo: nil))
+                    completionHandler(false, NSError(domain: "downloadPhotosForPin", code: 0, userInfo: nil))
                 }
             }
         })
     }
     
     // Download save image and change file path for photo
-    func downloadPhotoImage(photo: Photos, completionHandler: (success: Bool, error: NSError?) -> Void) {
+    func downloadPhotoImage(_ photo: Photos, completionHandler: @escaping (_ success: Bool, _ error: NSError?) -> Void) {
         
         let imageURLString = photo.url
         
@@ -102,7 +102,7 @@ extension FlickrClient {
             if let error = error {
                 print("Error from downloading images \(error.localizedDescription )")
                 photo.filePath = "error"
-                completionHandler(success: false, error: error)
+                completionHandler(false, error)
                 
             } else {
                 
@@ -110,18 +110,18 @@ extension FlickrClient {
                     
                     // Get file name and file url
                     let fileName = (imageURLString! as NSString).lastPathComponent
-                    let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+                    let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
                     let pathArray = [dirPath, fileName]
-                    let fileURL = NSURL.fileURLWithPathComponents(pathArray)!
+                    let fileURL = NSURL.fileURL(withPathComponents: pathArray)!
                     //print(fileURL)
                     
                     // Save file
-                    NSFileManager.defaultManager().createFileAtPath(fileURL.path!, contents: result, attributes: nil)
+                    FileManager.default.createFile(atPath: fileURL.path, contents: result, attributes: nil)
                     
                     // Update the Photos model
                     photo.filePath = fileURL.path
                     
-                    completionHandler(success: true, error: nil)
+                    completionHandler(true, nil)
                 }
             }
         })
